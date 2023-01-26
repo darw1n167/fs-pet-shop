@@ -1,10 +1,11 @@
 const express = require('express')
 const app = express()
-var path = require('path')
-var petsPath = path.join(__dirname, 'pets.json')
+let path = require('path')
+let petsPath = path.join(__dirname, 'pets.json')
 const regExp = /^\/pets\/(.*)$/;
 let fs = require('fs');
 const { urlencoded } = require('express');
+const morgan = require('morgan');
 const parser = require('body-parser');
 app.use(parser.json())
 
@@ -38,6 +39,7 @@ app.get('/pets/:id', (req, res) => {
       if(id < 0 || id >= JSON.parse(data).length || Number.isNaN(id)){
         return res.sendStatus(500);
       }
+      res.sendStatus = 200;
       res.set('Content-Type', 'application/json');
       res.send(JSON.parse(data)[id])
     })
@@ -49,9 +51,9 @@ app.get('/pets/:id', (req, res) => {
 // app.use(express.urlencoded({extended: true}));
 
 app.post('/pets', function(req, res) {
-      fs.readFile(petsPath, 'utf-8', (err, data) => {
+      fs.readFile(petsPath, 'utf8', (err, data) => {
         if (err)  {
-        console.error(err.stack);
+        // console.error(err.stack);
         return res.sendStatus(500);
       }
 
@@ -66,14 +68,12 @@ app.post('/pets', function(req, res) {
       }
 
       parsedPets.push(pet)
-      console.log(parsedPets)
-
-
+      
       let JSONpets = JSON.stringify(parsedPets)
 
       fs.writeFile(petsPath, JSONpets, function(err) {
         if (err) {
-          console.error(err.stack);
+          // console.error(err.stack);
           return res.sendStatus(404)
         }
         res.set('Content-Type', 'application/json');
@@ -82,7 +82,11 @@ app.post('/pets', function(req, res) {
     })
   })
 
-
+app.patch('/pets/:id', (req, res) => {
+  fs.readFile(petsPath, 'utf-8', (err, data) => {
+    
+  })
+})
 
 
 app.listen(8000, function() {
